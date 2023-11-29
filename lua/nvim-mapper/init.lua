@@ -59,9 +59,12 @@ M.gen_mapping = function(mode, left, right)
 
     local mapping_or_default = function(mapping_callback)
         return function()
-            local success = pcall(mapping_callback)
+            local success, res = pcall(mapping_callback)
             if not success then
-                send_keys_to_nvim_with_count(left) -- send the raw keys back if we have not mapped the key
+                return send_keys_to_nvim_with_count(left) -- send the raw keys back if we have not mapped the key
+            end
+            if type(res) == "string" then
+                send_keys_to_nvim_with_count(res)
             end
         end
     end

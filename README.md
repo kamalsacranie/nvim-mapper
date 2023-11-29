@@ -5,6 +5,17 @@
 > previous mapping as an argument so you can use it as a fallback in your new
 > mapping.
 
+# Installation
+
+Regular `lazy` installation. No setup required as you are just importing and
+using the function to map your key:
+
+```lua
+{ "kamalsacranie/nvim-mapper" }
+```
+
+# Usage
+
 Sometimes I want to multiple things one key can do depending on some conditions.
 For example, in insert mode, I want `<C-f>` to jump me forward in my snippet, if
 there is text on the line, I want it to put me at the end of my line, and
@@ -53,7 +64,7 @@ As long as these are defined in the correct order, now we have a keymap which do
 
 ![Example of using `<C-f>`](./assets/example-c-f.gif)
 
-## Points to note
+# Points to note
 
 - `map_keymap` takes the same arguments as `vim.keymap.set` so it's pretty my an
   in place substituion

@@ -3,6 +3,9 @@ local M = {}
 local send_keys_to_nvim = function(string)
     local keys = vim.api.nvim_replace_termcodes(string, true, false,
         true)
+    if vim.api.nvim_get_mode().mode == "niI" then
+        return vim.cmd("normal " .. keys)
+    end
     return vim.api.nvim_feedkeys(keys, "n",
         false)
 end
@@ -14,7 +17,7 @@ end
 
 ---@param mode Mode[]|Mode: The mode or list of modes the mapping should apply to
 ---@param left string: left part of mapping
----@param right string|fun(fallback: unknown): unknown Right part of mapping
+---@param right string|fun(fallback: unknown): string|nil Right part of mapping
 ---@param opts table?: options for our keymap
 M.map_keymap = function(mode, left, right, opts)
     ---@type Mode[]
@@ -49,11 +52,10 @@ end
 ---@param mode Mode
 ---@param left string
 ---@param right string|fun(fallback: function|nil)
----@return function
 M.gen_mapping = function(mode, left, right)
     if type(right) == "string" then
         return function()
-            return send_keys_to_nvim_with_count(right)
+            send_keys_to_nvim_with_count(right)
         end
     end
 
@@ -71,7 +73,7 @@ M.gen_mapping = function(mode, left, right)
     ---@type string|function
     local prev_mapping
     local keymap_meta_info = vim.fn.maparg(left, mode, nil, true)
-    if keymap_meta_info then
+    if vim.fn.len(keymap_meta_info) ~= 0 then
         prev_mapping = keymap_meta_info.rhs or keymap_meta_info.callback
     end
 
@@ -82,19 +84,17 @@ M.gen_mapping = function(mode, left, right)
     ---@type function
     prev_mapping = type(prev_mapping) == "function" and prev_mapping or
         function()
-            return prev_mapping
+            send_keys_to_nvim_with_count(prev_mapping)
         end
-    return mapping_or_default(function()
-        -- If anonymous function then pass through our fallback
-        if not debug.getinfo(right, "n") then
-            return right(prev_mapping)
-        else
-            -- If named function, then don't pass our fallback through as it could take differen
-            -- arguments. E.g. we could not pass a function to lsp.buf.rename(...) because
-            -- it takes it's own arguments
-            return right()
-        end
-    end)
+    if debug.getinfo(right, "n").namewhat == "" then
+        return mapping_or_default(function()
+            right(prev_mapping)
+        end)
+    end
+    -- If named function, then don't pass our fallback through as it could take differen
+    -- arguments. E.g. we could not pass a function to lsp.buf.rename(...) because
+    -- it takes it's own arguments
+    return mapping_or_default(right)
 end
 
 return M

@@ -31,7 +31,7 @@ M.map_keymap = function(mode, left, right, opts)
     end
 end
 
----@alias Mode "n" | "v" | "i" | "x" | "s"
+---@alias Mode "n" | "v" | "i" | "x" | "s" | "t"
 ---@class Keymap
 ---@field[1]  Mode[]|Mode: mode
 ---@field[2] string: left

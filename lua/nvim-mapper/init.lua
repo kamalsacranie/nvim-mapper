@@ -1,5 +1,14 @@
 local M = {}
 
+---@class MapperConfig
+---@field debug boolean
+local cfg = { debug = false }
+
+---@param user_config MapperConfig
+M.setup = function(user_config)
+    cfg = vim.tbl_deep_extend("force", cfg, user_config) or cfg
+end
+
 local send_keys_to_nvim = function(string)
     local keys = vim.api.nvim_replace_termcodes(string, true, false,
         true)
@@ -68,6 +77,9 @@ M.gen_mapping = function(mode, left, right, fallback)
         return function()
             local success, res = pcall(mapping_callback)
             if not success then
+                if cfg.debug then
+                    vim.notify(res, vim.log.levels.DEBUG)
+                end
                 return send_keys_to_nvim_with_count(left) -- send the raw keys back if we have not mapped the key
             end
             if type(res) == "string" then

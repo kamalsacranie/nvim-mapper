@@ -24,12 +24,12 @@ local send_keys_to_nvim_with_count = function(string)
     send_keys_to_nvim((count ~= 0 and count or "") .. string)
 end
 
----@param mode Mode[]|Mode: The mode or list of modes the mapping should apply to
+---@param mode VimMode[]|VimMode: The mode or list of modes the mapping should apply to
 ---@param left string: left part of mapping
 ---@param right string|fun(fallback: unknown): string|nil Right part of mapping
 ---@param opts? table: options for our keymap
 M.map_keymap = function(mode, left, right, opts)
-    ---@type Mode[]
+    ---@type VimMode[]
     mode = type(mode) == "table" and mode or { mode }
     opts = opts or {}
     local fallback = opts.fallback
@@ -41,9 +41,9 @@ M.map_keymap = function(mode, left, right, opts)
     end
 end
 
----@alias Mode "n" | "v" | "i" | "x" | "s" | "t"
+---@alias VimMode "n" | "v" | "i" | "x" | "s" | "t"
 ---@class Keymap
----@field[1]  Mode[]|Mode: mode
+---@field[1]  VimMode[]|VimMode: mode
 ---@field[2] string: left
 ---@field[3] string | fun(fallback: unknown|nil) right
 ---@field[4] table?: opts: options for the specific keymap that override options passed through map_keymap_list
@@ -62,7 +62,7 @@ M.map_keymap_list = function(mappings, ext_opts)
 end
 
 
----@param mode Mode
+---@param mode VimMode
 ---@param left string
 ---@param right string|fun(fallback: function|nil)
 ---@param fallback boolean? Whether you want the fallback to be passed through. Needed when you are passing a callback with a different signature. For example, vim.lsp.buf.rename. True by default

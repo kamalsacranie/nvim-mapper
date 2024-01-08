@@ -27,10 +27,11 @@ end
 ---@param mode Mode[]|Mode: The mode or list of modes the mapping should apply to
 ---@param left string: left part of mapping
 ---@param right string|fun(fallback: unknown): string|nil Right part of mapping
----@param opts table: options for our keymap
+---@param opts? table: options for our keymap
 M.map_keymap = function(mode, left, right, opts)
     ---@type Mode[]
     mode = type(mode) == "table" and mode or { mode }
+    opts = opts or {}
     local fallback = opts.fallback
     opts.fallback = nil
     local new_mapping = right
